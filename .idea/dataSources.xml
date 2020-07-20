@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="sob_blog_system@192.168.92.129" uuid="304bad8a-6916-4cd6-9151-86203d986d88">
+    <data-source source="LOCAL" name="sob_blog_system@localhost" uuid="38ea69df-752a-477c-90f3-14193720d42c">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://192.168.92.129:3306/sob_blog_system</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/sob_blog_system</jdbc-url>
+      <driver-properties>
+        <property name="serverTimezone" value="UTC" />
+      </driver-properties>
     </data-source>
   </component>
 </project>

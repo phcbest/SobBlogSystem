@@ -11,15 +11,25 @@ public class ResponseResult {
     private String message;
     private Object Data;
 
-    public ResponseResult(boolean success, int code, String message, Object data) {
-        this.success = success;
-        this.code = code;
-        this.message = message;
-        Data = data;
+    public ResponseResult(ResponseState responseState) {
+        this.success = responseState.isSuccess();
+        this.code = responseState.getCode();
+        this.message = responseState.getMessage();
     }
 
-    public ResponseResult() {
+
+    public static ResponseResult SUCCESS(String message){
+        ResponseResult responseResult = new ResponseResult(ResponseState.SUCCESS);
+        responseResult.setMessage(message);
+        return responseResult;
     }
+    public static ResponseResult SUCCESS(){
+        return new ResponseResult(ResponseState.SUCCESS);
+    }
+    public static ResponseResult FAILED(){
+        return new ResponseResult(ResponseState.FAILED);
+    }
+
 
     public boolean isSuccess() {
         return success;
@@ -49,7 +59,8 @@ public class ResponseResult {
         return Data;
     }
 
-    public void setData(Object data) {
+    public ResponseResult setData(Object data) {
         Data = data;
+        return this;
     }
 }
