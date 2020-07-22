@@ -1,23 +1,23 @@
 package nat.phc.blog.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import nat.phc.blog.pojo.testPojo;
 import nat.phc.blog.pojo.testUser;
 import nat.phc.blog.response.ResponseResult;
 import nat.phc.blog.response.ResponseState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * @author PengHaiChen
  */
-@RestController
+@Slf4j
+@RestController//这个注解将类自动填入工厂并且调用api能返回参数
 @RequestMapping("/test")
 public class TestController {
-    public static final Logger log = LoggerFactory.getLogger(TestController.class);
 
     @GetMapping("/hello")
     public ResponseResult helloWorld() {
+
         log.info("hello");
         return ResponseResult.SUCCESS().setData("以后再也不打ow的排位了，头都给人打爆");
     }

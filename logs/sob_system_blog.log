@@ -1,0 +1,3 @@
+[2020/07/22-08:13:29] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on PENGhc with PID 18652 (E:\code\java\SobBlogSystem\target\classes started by PengHaiChen in E:\code\java\SobBlogSystem)
+[2020/07/22-08:13:29] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
+[2020/07/22-08:13:32] [main] [INFO ] [nat.phc.blog.BlogApplication] : Started BlogApplication in 3.374 seconds (JVM running for 4.115)
