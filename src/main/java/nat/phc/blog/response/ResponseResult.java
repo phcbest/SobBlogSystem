@@ -23,11 +23,19 @@ public class ResponseResult {
         responseResult.setMessage(message);
         return responseResult;
     }
-    public static ResponseResult SUCCESS(){
+
+    public static ResponseResult SUCCESS() {
         return new ResponseResult(ResponseState.SUCCESS);
     }
-    public static ResponseResult FAILED(){
+
+    public static ResponseResult FAILED() {
         return new ResponseResult(ResponseState.FAILED);
+    }
+
+    public static ResponseResult FAILED(String name) {
+        ResponseResult responseResult = new ResponseResult(ResponseState.FAILED);
+        responseResult.setMessage(name);
+        return responseResult;
     }
 
 

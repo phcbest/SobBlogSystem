@@ -17,8 +17,14 @@ public class CommentPortalApi {
     public ResponseResult postComment(@RequestBody Comment comment) {
         return null;
     }
+
     @DeleteMapping("/{commentId}")
     public ResponseResult deleteComment(@PathVariable("commentId") String commentId) {
+        return null;
+    }
+
+    @GetMapping("list/{articleId}")
+    public ResponseResult listComments(@PathVariable("articleId") String articleId) {
         return null;
     }
 }

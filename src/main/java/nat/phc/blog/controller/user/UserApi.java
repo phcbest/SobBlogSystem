@@ -3,7 +3,11 @@ package nat.phc.blog.controller.user;
 import lombok.extern.slf4j.Slf4j;
 import nat.phc.blog.pojo.SobUser;
 import nat.phc.blog.response.ResponseResult;
+import nat.phc.blog.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @Author: PengHaiChen
@@ -15,12 +19,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserApi {
 
+    @Autowired
+    private IUserService userService;
+
     /**
      * 初始化管理员账号
      */
     @PostMapping("/admin_account")
-    public ResponseResult initManagerAccount(@RequestBody SobUser sobUser) {
-        return ResponseResult.SUCCESS();
+    public ResponseResult initManagerAccount(@RequestBody SobUser sobUser, HttpServletRequest request) {
+        return userService.initManagerAccount(sobUser,request);
     }
 
     /**
