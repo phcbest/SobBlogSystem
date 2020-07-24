@@ -11,6 +11,7 @@ import nat.phc.blog.utils.Constants;
 import nat.phc.blog.utils.IdWorker;
 import nat.phc.blog.utils.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,9 @@ import java.util.Date;
 public class UserServiceImpl implements IUserService {
 
     @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
     private IdWorker idWorker;
 
     @Autowired
@@ -38,7 +42,7 @@ public class UserServiceImpl implements IUserService {
     private SettingsDao settingsDao;
 
     @Override
-    public ResponseResult initManagerAccount(SobUser sobUser, HttpServletRequest request) {
+    public ResponseResult initManagerAccount(  SobUser sobUser, HttpServletRequest request) {
         //检查是否初始化
         Setting managerAccountState = settingsDao.findOneByKey(Constants.Settings.MANAGER_ACCOUNT_INIT_STATE);
         if (managerAccountState != null) {
@@ -73,6 +77,9 @@ public class UserServiceImpl implements IUserService {
         //设置时间
         sobUser.setCreateTime(new Date());
         sobUser.setUpdateTime(new Date());
+        //对密码进行加密
+        String encode = bCryptPasswordEncoder.encode(sobUser.getPassword());
+        sobUser.setPassword(encode);
         //保存进数据库中
         userDao.save(sobUser);
         //更新已经添加的标记

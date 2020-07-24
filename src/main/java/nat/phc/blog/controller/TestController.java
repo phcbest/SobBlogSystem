@@ -1,5 +1,7 @@
 package nat.phc.blog.controller;
 
+import com.wf.captcha.SpecCaptcha;
+import com.wf.captcha.base.Captcha;
 import lombok.extern.slf4j.Slf4j;
 import nat.phc.blog.dao.LabelDao;
 import nat.phc.blog.pojo.Label;
@@ -12,10 +14,19 @@ import nat.phc.blog.utils.IdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author PengHaiChen
@@ -34,7 +45,6 @@ public class TestController {
 
     @GetMapping("/hello")
     public ResponseResult helloWorld() {
-
         log.info("hello");
         return ResponseResult.SUCCESS().setData("以后再也不打ow的排位了，头都给人打爆");
     }
@@ -104,11 +114,55 @@ public class TestController {
         if (page < 1) {
             page = 1;
         }
-        if (size<=0){
-            size= Constants.DEFAULT_SIZE;
+        if (size <= 0) {
+            size = Constants.DEFAULT_SIZE;
         }
-        PageRequest pageable = PageRequest.of(page - 1, size);
+        Sort sort = new Sort(Sort.Direction.DESC, "createTime");
+        PageRequest pageable = PageRequest.of(page - 1, size, sort);
         Page<Label> result = labelDao.findAll(pageable);
         return ResponseResult.SUCCESS("取回分页数据成功").setData(result);
+    }
+
+    @GetMapping("/label/search")
+    public ResponseResult doLabelSearch(@RequestParam("keyword") String keyword, @RequestParam("count") int count) {
+        List<Label> all = labelDao.findAll(new Specification<Label>() {
+            @Override
+            public Predicate toPredicate(Root<Label> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                Predicate namePre = cb.like(root.get("name").as(String.class), "%" + keyword + "%");
+                Predicate countPre = cb.equal(root.get("count").as(Integer.class), count);
+                return cb.and(namePre, countPre);
+            }
+        });
+        if (all.size() == 0) {
+            return ResponseResult.FAILED("结果为空");
+        }
+        return ResponseResult.SUCCESS("查找成功").setData(all);
+    }
+
+    //http://localhost:2333/test/captcha
+    @RequestMapping("/captcha")
+    public void captcha(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        // 设置请求头为输出图片类型
+        response.setContentType("image/gif");
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
+
+        // 三个参数分别为宽、高、位数
+        SpecCaptcha specCaptcha = new SpecCaptcha(130, 48, 5);
+        // 设置字体
+//        specCaptcha.setFont(new Font("Verdana", Font.PLAIN, 32));  // 有默认字体，可以不用设置
+        specCaptcha.setFont(Captcha.FONT_1);
+        // 设置类型，纯数字、纯字母、字母数字混合
+        //specCaptcha.setCharType(Captcha.TYPE_ONLY_NUMBER);
+        specCaptcha.setCharType(Captcha.TYPE_DEFAULT);
+
+        String content = specCaptcha.text().toLowerCase();
+        log.info("captcha content == > " + content);
+        // 验证码存入session
+        request.getSession().setAttribute("captcha", content);
+
+        // 输出图片流
+        specCaptcha.out(response.getOutputStream());
     }
 }
