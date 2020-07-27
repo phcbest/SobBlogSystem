@@ -11,6 +11,7 @@ import nat.phc.blog.response.ResponseResult;
 import nat.phc.blog.response.ResponseState;
 import nat.phc.blog.utils.Constants;
 import nat.phc.blog.utils.IdWorker;
+import nat.phc.blog.utils.RedisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,8 +46,9 @@ public class TestController {
 
     @GetMapping("/hello")
     public ResponseResult helloWorld() {
-        log.info("hello");
-        return ResponseResult.SUCCESS().setData("以后再也不打ow的排位了，头都给人打爆");
+        String captchaContent = (String)redisUtils.get(Constants.User.KEY_CAPTCHA_CONTENT+"123456");
+        log.info("captchaContent==========>"+captchaContent);
+        return ResponseResult.SUCCESS().setData(captchaContent);
     }
 
     @GetMapping("/nohello")
@@ -139,6 +141,9 @@ public class TestController {
         return ResponseResult.SUCCESS("查找成功").setData(all);
     }
 
+    @Autowired
+    private RedisUtils redisUtils;
+
     //http://localhost:2333/test/captcha
     @RequestMapping("/captcha")
     public void captcha(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -160,8 +165,9 @@ public class TestController {
         String content = specCaptcha.text().toLowerCase();
         log.info("captcha content == > " + content);
         // 验证码存入session
-        request.getSession().setAttribute("captcha", content);
-
+//        request.getSession().setAttribute("captcha", content);
+        //验证码存入redis//KEY_CAPTCHA_CONTENT加随机数
+        redisUtils.set(Constants.User.KEY_CAPTCHA_CONTENT+"123456",content,60*10);
         // 输出图片流
         specCaptcha.out(response.getOutputStream());
     }

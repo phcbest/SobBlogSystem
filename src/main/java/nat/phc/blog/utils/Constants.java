@@ -11,8 +11,14 @@ public interface Constants {
 
     interface User {
         String ROLE_ADMIN = "role_admin";
-        String DEFAULT_AVATAR = "https://s1.ax1x.com/2020/07/23/ULBMBF.th.jpg";
+        String ROLE_NORMAL = "role_normal";
+        String DEFAULT_ADMIN_AVATAR = "https://s1.ax1x.com/2020/07/23/ULBMBF.th.jpg";
+        String DEFAULT_USER_AVATAR = "https://s1.ax1x.com/2020/07/26/a9YifH.th.jpg";
         String DEFAULT_STATE = "1";
+        String KEY_CAPTCHA_CONTENT = "key_captcha_content_";
+        String KEY_EMAIL_CODE_CONTENT = "key_email_code_content_";
+        String KEY_EMAIL_SEND_IP = "key_email_send_ip_";
+        String KEY_EMAIL_SEND_ADDRESS = "key_email_send_address_";
     }
 
     interface Settings {

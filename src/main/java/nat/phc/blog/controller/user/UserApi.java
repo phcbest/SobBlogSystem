@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @Author: PengHaiChen
@@ -22,12 +23,14 @@ public class UserApi {
     @Autowired
     private IUserService userService;
 
+
+
     /**
      * 初始化管理员账号
      */
     @PostMapping("/admin_account")
     public ResponseResult initManagerAccount(@RequestBody SobUser sobUser, HttpServletRequest request) {
-        return userService.initManagerAccount(sobUser,request);
+        return userService.initManagerAccount(sobUser, request);
     }
 
     /**
@@ -37,8 +40,13 @@ public class UserApi {
      * @return
      */
     @PostMapping
-    public ResponseResult register(@RequestBody SobUser sobUser) {
-        return null;
+    public ResponseResult register(@RequestBody SobUser sobUser,
+                                   @RequestParam("email_code")String emailCode,
+                                   @RequestParam("captcha_code")String captchaCode,
+                                   @RequestParam("captcha_key")String captchaKey,
+                                   HttpServletRequest request) {
+        return userService.register(sobUser,emailCode,captchaCode,captchaKey,request);
+
     }
 
     /**
@@ -51,26 +59,37 @@ public class UserApi {
         return null;
     }
 
+
+
     /**
-     * 获取验证码
+     * 获取图灵验证码
      *
      * @return
      */
     @GetMapping("/captcha")
-    public ResponseResult getCaptcha() {
-        return null;
+    public void getCaptcha(HttpServletResponse response, @RequestParam("captcha_key") String captchaKey)  {
+        try {
+            userService.getCaptcha(response,captchaKey);
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
+
     }
 
+
     /**
-     * 邮箱地址
+     * 发送邮件
+     *三种使用场景，注册，找回密码，修改邮箱
+     *
      *
      * @param emailAddress
      * @return
      */
     @GetMapping("/verify_code")
-    public ResponseResult sendVerifyCode(@RequestParam("email") String emailAddress) {
+    public ResponseResult sendVerifyCode(HttpServletRequest request,@RequestParam("type")String type,
+                                         @RequestParam("email") String emailAddress) {
         log.info("email========>" + emailAddress);
-        return null;
+        return userService.sendEmail(type,request,emailAddress);
     }
 
     /**

@@ -11,8 +11,12 @@ public enum  ResponseState {
      */
     SUCCESS(2000,"操作成功",true),
     FAILED(4000,"操作失败",false),
+
+    JOIN_IN_SUCCESS(2008,"注册成功",true),
+
     GET_RESOURCE_SUCCESS(2002,"获取资源成功",true),
     GET_RESOURCE_FAILED(4002,"获取资源失败",false),
+
     LOGIN_SUCCESS(2001,"登录成功",true),
     LOGIN_FAILED(4001,"登录失败",false);
 
