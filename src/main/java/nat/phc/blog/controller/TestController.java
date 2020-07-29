@@ -2,16 +2,17 @@ package nat.phc.blog.controller;
 
 import com.wf.captcha.SpecCaptcha;
 import com.wf.captcha.base.Captcha;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import nat.phc.blog.dao.CommentDao;
 import nat.phc.blog.dao.LabelDao;
+import nat.phc.blog.pojo.Comment;
 import nat.phc.blog.pojo.Label;
 import nat.phc.blog.pojo.testPojo;
 import nat.phc.blog.pojo.testUser;
 import nat.phc.blog.response.ResponseResult;
 import nat.phc.blog.response.ResponseState;
-import nat.phc.blog.utils.Constants;
-import nat.phc.blog.utils.IdWorker;
-import nat.phc.blog.utils.RedisUtils;
+import nat.phc.blog.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -40,6 +41,7 @@ public class TestController {
 
     @Autowired
     private LabelDao labelDao;
+
 
     @Autowired
     private IdWorker idWorker;
@@ -167,8 +169,57 @@ public class TestController {
         // 验证码存入session
 //        request.getSession().setAttribute("captcha", content);
         //验证码存入redis//KEY_CAPTCHA_CONTENT加随机数
-        redisUtils.set(Constants.User.KEY_CAPTCHA_CONTENT+"123456",content,60*10);
+        redisUtils.set(Constants.User.KEY_CAPTCHA_CONTENT + "123456", content, 60 * 10);
         // 输出图片流
         specCaptcha.out(response.getOutputStream());
+    }
+
+    @Autowired
+    private CommentDao commentDao;
+
+    @PostMapping("/comment")
+    public ResponseResult testComment(@RequestBody Comment comment, HttpServletRequest request) {
+        String content = comment.getContent();
+        log.info("评论内容===》" + content);
+        //对评论身份进行验证
+        String tokenKey = CookieUtils.getCookie(request,Constants.User.COOKIE_TOKEN_KEY);
+        if (tokenKey == null) {
+            return ResponseResult.FAILED("账号未登录");
+        }
+        String token = (String) redisUtils.get(Constants.User.KEY_TOKEN + tokenKey);
+        if (token == null) {
+            //空的话又可能过期了，去查找refreshToken
+            //如果refreshToken不存在或者过期，就告诉用户未登录
+        }
+        //解析Token
+        Claims claims = null;
+        try {
+            //这个token有可能会过期
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            //空的话又可能过期了，去查找refreshToken
+            //如果refreshToken不存在或者过期，就告诉用户未登录
+            return ResponseResult.FAILED("账号未登录");
+
+        }
+        if (claims == null) {
+            return ResponseResult.FAILED("账号未登录");
+        }
+
+        log.info("提交评论解析Token内容===》" + claims.toString());
+        //数据填充
+//        id	parent_content	article_id	content	user_id	user_avatar	user_name	state	create_time	update_time
+        String userId = (String) claims.get("id");
+        comment.setUserId(userId);
+        String avatar = (String) claims.get("avatar");
+        comment.setUserAvatar(avatar);
+        String userName = (String) claims.get("user_name");
+        comment.setUserName(userName);
+        comment.setState("1");
+        comment.setCreateTime(new Date());
+        comment.setUpdateTime(new Date());
+        comment.setId(String.valueOf(idWorker.nextId()));
+        commentDao.save(comment);
+        return ResponseResult.SUCCESS("评论成功");
     }
 }

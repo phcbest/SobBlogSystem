@@ -9,6 +9,10 @@ public interface Constants {
 
     int DEFAULT_SIZE = 30;
 
+    interface TimeValue {
+        long HOUR_2 = 2 * 60 * 60 * 1000;
+    }
+
     interface User {
         String ROLE_ADMIN = "role_admin";
         String ROLE_NORMAL = "role_normal";
@@ -19,6 +23,8 @@ public interface Constants {
         String KEY_EMAIL_CODE_CONTENT = "key_email_code_content_";
         String KEY_EMAIL_SEND_IP = "key_email_send_ip_";
         String KEY_EMAIL_SEND_ADDRESS = "key_email_send_address_";
+        String KEY_TOKEN = "key_token_";
+        String COOKIE_TOKEN_KEY = "phc_blog_login_token";
     }
 
     interface Settings {

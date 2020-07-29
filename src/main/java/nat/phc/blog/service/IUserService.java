@@ -25,4 +25,6 @@ public interface IUserService {
     ResponseResult sendEmail(String type, HttpServletRequest request, String emailAddress);
 
     ResponseResult register(SobUser sobUser, String emailCode, String captchaCode, String captchaKey, HttpServletRequest request);
+
+    ResponseResult doLogin(String captcha, String captchaKey, SobUser sobUser, HttpServletRequest request, HttpServletResponse response);
 }

@@ -12,18 +12,18 @@ import nat.phc.blog.pojo.SobUser;
 import nat.phc.blog.response.ResponseResult;
 import nat.phc.blog.response.ResponseState;
 import nat.phc.blog.service.IUserService;
-import nat.phc.blog.utils.Constants;
-import nat.phc.blog.utils.IdWorker;
-import nat.phc.blog.utils.RedisUtils;
-import nat.phc.blog.utils.TextUtils;
+import nat.phc.blog.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -300,5 +300,63 @@ public class UserServiceImpl implements IUserService {
         userDao.save(sobUser);
         //返回结果
         return ResponseResult.GET(ResponseState.JOIN_IN_SUCCESS);
+    }
+
+    @Override
+    public ResponseResult doLogin(String captcha,
+                                  String captchaKey,
+                                  SobUser sobUser,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response) {
+        //验证图灵验证码是否正确
+        String captchaValue = (String) redisUtils.get(Constants.User.KEY_CAPTCHA_CONTENT + captchaKey);
+        if (!captcha.equals(captchaValue)) {
+            return ResponseResult.FAILED("图灵验证码不正确");
+        }
+        //传入的有可能是name有可能是email
+        String userName = sobUser.getUserName();
+        if (TextUtils.isEmpty(userName)) {
+            return ResponseResult.FAILED("账号不能为空");
+        }
+        String password = sobUser.getPassword();
+        if (TextUtils.isEmpty(password)) {
+            return ResponseResult.FAILED("密码不能为空");
+        }
+        SobUser userFromDb = userDao.findByUserName(userName);
+        if (userFromDb == null) {
+            userFromDb = userDao.findByEmail(userName);
+        }
+        if (userFromDb == null) {
+            ResponseResult.FAILED("用户名或密码错误");
+        }
+        //用户存在，对比密码
+        boolean matches = bCryptPasswordEncoder.matches(password, userFromDb.getPassword());
+        if (!matches) {
+            ResponseResult.FAILED("用户名或密码错误");
+        }
+        //密码正确，判断用户状态，如果不真诚返回结果（1是正常）
+        if (!userFromDb.getState().equals("1")) {
+            return ResponseResult.FAILED("用户已被禁封");
+        }
+        //用户密码是正确的，生成token
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", userFromDb.getId());
+        claims.put("user_name", userFromDb.getUserName());
+        claims.put("roles", userFromDb.getRoles());
+        claims.put("avatar", userFromDb.getAvatar());
+        claims.put("email", userFromDb.getEmail());
+        claims.put("sign", userFromDb.getSign());
+        //两个小时的默认有效期
+        String token = JwtUtils.createJWT(claims);
+        //返回token的md5，token保存到redis中，只给前端md5值，前端验证身份的时候给一个md5，然后后台根据md5找到对应token来验证身份
+        String tokenKey = DigestUtils.md5DigestAsHex(token.getBytes());
+        //token存入redis中，key是tokenKey
+        redisUtils.set(Constants.User.KEY_TOKEN + tokenKey, token, 60 * 60 * 2);
+        //token存储到cookies中
+        CookieUtils.setUpCookie(response,Constants.User.COOKIE_TOKEN_KEY,tokenKey);
+        //TODO 还需要生成长存储的refreshToken存mysql
+        //删除保存的验证码
+        redisUtils.del(Constants.User.KEY_CAPTCHA_CONTENT + captchaKey);
+        return ResponseResult.SUCCESS("登录成功");
     }
 }
