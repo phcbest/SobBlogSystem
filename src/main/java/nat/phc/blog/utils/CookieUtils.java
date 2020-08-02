@@ -42,7 +42,11 @@ public class CookieUtils {
      * 获取cookie
      */
     public static String getCookie(HttpServletRequest request, String key) {
+
         Cookie[] cookies = request.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            return null;
+        }
         for (Cookie cookie : cookies) {
             if (key.equals(cookie.getName())) {
                 return cookie.getValue();

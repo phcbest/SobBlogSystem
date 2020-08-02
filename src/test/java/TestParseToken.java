@@ -1,4 +1,5 @@
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import nat.phc.blog.utils.JwtUtils;
 
 /**
@@ -8,12 +9,12 @@ import nat.phc.blog.utils.JwtUtils;
  */
 public class TestParseToken {
     public static void main(String[] args) {
-        Claims claims = JwtUtils.parseJWT("eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX25hbWUiOiJhZG1pbiIsInJvbGVzIjoicm9sZV9hZG1pbiIsImlkIjoiNzM2Mjk0MzQ2NzIyMTE1NTg0IiwiYXZhdGFyIjoiaHR0cHM6Ly9zMS5heDF4LmNvbS8yMDIwLzA3LzIzL1VMQk1CRi50aC5qcGciLCJleHAiOjE1OTU4NDA0NjAsImVtYWlsIjoicGhjYmVzdDIwMTdAb3V0bG9vay5jb20ifQ.wSXQXzA6fHp7772Z2GTzWujzxELc9sdiyfOoMVZvmn0");
-        System.out.println(claims.get("id"));
-        System.out.println(claims.get("user_name"));
-        System.out.println(claims.get("roles"));
-        System.out.println(claims.get("avatar"));
-        System.out.println(claims.get("email"));
+        String token =
+                "eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3MzYyOTQzNDY3MjIxMTU1ODQiLCJpYXQiOjE1OTYyMDQ5NDF9.Q4xLM3khNsNmbUhKttusbDqf4OsBYkSwZRJc1Q9yLDU";
+        Claims claims = JwtUtils.parseJWT(token);
+        String x = Jwts.parser().setSigningKey("f4efef5d29f31fda04fae054d2edb133").parse(token).toString();
+        System.out.println(x);
+        System.out.println(claims.toString());
 
     }
 

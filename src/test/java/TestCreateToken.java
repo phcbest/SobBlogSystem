@@ -1,3 +1,4 @@
+import nat.phc.blog.utils.Constants;
 import nat.phc.blog.utils.JwtUtils;
 
 import java.util.HashMap;
@@ -17,7 +18,7 @@ public class TestCreateToken {
         claims.put("avatar","https://s1.ax1x.com/2020/07/23/ULBMBF.th.jpg");
         claims.put("email","phcbest2017@outlook.com");
 //        4a4e13d071e99b87e166e1860e4f17c9
-        String token = JwtUtils.createJWT(claims);
+        String token = JwtUtils.createRefreshToken("123546", Constants.TimeValue.MONTH_MS);
         System.out.println(token);
     }
 

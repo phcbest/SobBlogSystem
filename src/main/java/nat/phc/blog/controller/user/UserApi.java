@@ -1,5 +1,7 @@
 package nat.phc.blog.controller.user;
 
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import nat.phc.blog.pojo.SobUser;
 import nat.phc.blog.response.ResponseResult;
@@ -121,37 +123,73 @@ public class UserApi {
      */
     @GetMapping("/{userId}")
     public ResponseResult getUserInfo(@PathVariable("userId") String userId) {
-        return null;
+        return userService.getUserInfo(userId);
     }
 
     /**
+     * 允许用户修改的信息
+     * 头像
+     * username（唯一）
+     * password（单独接口）
+     * sign
+     * email（单独接口）（唯一）
+     * <p>
+     * 需要校验用户权限
+     *
      * @return
      */
     @PutMapping("/{userId}")
-    public ResponseResult updateUserInfo(@RequestBody SobUser sobUser, @PathVariable("userId") String userId) {
-        return null;
+    public ResponseResult updateUserInfo(HttpServletRequest request, HttpServletResponse response,
+                                         @RequestBody SobUser sobUser, @PathVariable("userId") String userId) {
+        return userService.upDateUserInfo(request, response, sobUser, userId);
     }
 
     /**
-     * 获取用户列表
+     * 获取用户列表(需要管理员权限)
      *
      * @param page
      * @param size
      * @return
      */
     @GetMapping("/list")
-    public ResponseResult listUsers(@RequestParam("page") int page, @RequestParam("size") int size) {
-        return null;
+    public ResponseResult listUsers(@RequestParam("page") int page, @RequestParam("size") int size,
+                                    HttpServletRequest request, HttpServletResponse response) {
+        return userService.listUser(page,size,request,response);
     }
 
     /**
-     * 删除用户
+     * 该api为删除用户的api，也就是修改状态
+     * 需要管理员权限
+     *
      * @param userId
      * @return
      */
     @DeleteMapping("/{userId}")
-    public ResponseResult deleteUser(@PathVariable("userId") String userId) {
-        return null;
+    public ResponseResult deleteUser(HttpServletResponse response, HttpServletRequest request,
+                                     @PathVariable("userId") String userId) {
+        //判断当前操作的用户是谁
+        //TODO 使用注解的方式开控制权限
+        return userService.deleteUserById(userId, request, response);
+    }
+
+
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "当前邮箱已经注册"),
+            @ApiResponse(code = 400, message = "当前邮箱没注册")
+    })
+    @GetMapping("/email")
+    public ResponseResult checkEmail(@RequestParam("email") String email) {
+        return userService.CheckEmail(email);
+    }
+
+
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "当前用户名已经注册"),
+            @ApiResponse(code = 400, message = "当前用户名没注册")
+    })
+    @GetMapping("/user_name")
+    public ResponseResult checkUserName(@RequestParam("user_name") String userName) {
+        return userService.CheckUserName(userName);
     }
 
 }

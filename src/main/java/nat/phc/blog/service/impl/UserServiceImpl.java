@@ -1,12 +1,16 @@
 package nat.phc.blog.service.impl;
 
+import com.google.gson.Gson;
 import com.wf.captcha.ArithmeticCaptcha;
 import com.wf.captcha.GifCaptcha;
 import com.wf.captcha.SpecCaptcha;
 import com.wf.captcha.base.Captcha;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import nat.phc.blog.dao.RefreshTokenDao;
 import nat.phc.blog.dao.SettingsDao;
 import nat.phc.blog.dao.UserDao;
+import nat.phc.blog.pojo.RefreshToken;
 import nat.phc.blog.pojo.Setting;
 import nat.phc.blog.pojo.SobUser;
 import nat.phc.blog.response.ResponseResult;
@@ -14,6 +18,10 @@ import nat.phc.blog.response.ResponseState;
 import nat.phc.blog.service.IUserService;
 import nat.phc.blog.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -22,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -52,8 +59,15 @@ public class UserServiceImpl implements IUserService {
     @Autowired
     private SettingsDao settingsDao;
 
+    @Autowired
+    private RefreshTokenDao refreshTokenDao;
+
+    @Autowired
+    private Gson gson;
+
+
     @Override
-    public ResponseResult initManagerAccount(  SobUser sobUser, HttpServletRequest request) {
+    public ResponseResult initManagerAccount(SobUser sobUser, HttpServletRequest request) {
         //检查是否初始化
         Setting managerAccountState = settingsDao.findOneByKey(Constants.Settings.MANAGER_ACCOUNT_INIT_STATE);
         if (managerAccountState != null) {
@@ -82,7 +96,7 @@ public class UserServiceImpl implements IUserService {
         sobUser.setState(Constants.User.DEFAULT_STATE);
         //定影获取登录ip
         String remoteAddr = request.getRemoteAddr();
-        log.info("当前ip=====》"+remoteAddr);
+        log.info("当前ip=====》" + remoteAddr);
         sobUser.setLoginIp(remoteAddr);
         sobUser.setRegIp(remoteAddr);
         //设置时间
@@ -174,12 +188,12 @@ public class UserServiceImpl implements IUserService {
         }
         //根据传递进来的类型来进行业务
         if ("register".equals(type) || "update".equals(type)) {
-            SobUser userDaoByEmail = userDao.findByEmail(emailAddress);
+            SobUser userDaoByEmail = userDao.findOneByEmail(emailAddress);
             if (userDaoByEmail != null) {
                 return ResponseResult.FAILED("该邮箱已经被注册");
             }
         } else if ("forget".equals(type)) {
-            SobUser userDaoByEmail = userDao.findByEmail(emailAddress);
+            SobUser userDaoByEmail = userDao.findOneByEmail(emailAddress);
             if (userDaoByEmail == null) {
                 return ResponseResult.FAILED("该邮箱并没注册");
             }
@@ -242,7 +256,7 @@ public class UserServiceImpl implements IUserService {
         if (TextUtils.isEmpty(userName)) {
             return ResponseResult.FAILED("用户名不能为空");
         }
-        SobUser userDaoByUserName = userDao.findByUserName(userName);
+        SobUser userDaoByUserName = userDao.findOneByUserName(userName);
         if (userDaoByUserName != null) {
             return ResponseResult.FAILED("该用户名已经注册");
         }
@@ -255,7 +269,7 @@ public class UserServiceImpl implements IUserService {
             return ResponseResult.FAILED("邮箱地址不正确");
         }
         //检查邮箱是否被注册
-        SobUser userDaoByEmail = userDao.findByEmail(email);
+        SobUser userDaoByEmail = userDao.findOneByEmail(email);
         if (userDaoByEmail != null) {
             return ResponseResult.FAILED("该邮箱已经注册");
         }
@@ -264,7 +278,7 @@ public class UserServiceImpl implements IUserService {
         if (TextUtils.isEmpty(emailVerifyCode)) {
             return ResponseResult.FAILED("邮箱验证码已经失效");
         }
-        log.info("两个验证码"+emailCode+":"+emailVerifyCode);
+        log.info("两个验证码" + emailCode + ":" + emailVerifyCode);
         if (!emailVerifyCode.equals(emailCode)) {
             return ResponseResult.FAILED("邮箱验证码错误");
         } else {
@@ -322,12 +336,12 @@ public class UserServiceImpl implements IUserService {
         if (TextUtils.isEmpty(password)) {
             return ResponseResult.FAILED("密码不能为空");
         }
-        SobUser userFromDb = userDao.findByUserName(userName);
+        SobUser userFromDb = userDao.findOneByUserName(userName);
         if (userFromDb == null) {
-            userFromDb = userDao.findByEmail(userName);
+            userFromDb = userDao.findOneByEmail(userName);
         }
         if (userFromDb == null) {
-            ResponseResult.FAILED("用户名或密码错误");
+            return ResponseResult.FAILED("用户名或密码错误");
         }
         //用户存在，对比密码
         boolean matches = bCryptPasswordEncoder.matches(password, userFromDb.getPassword());
@@ -335,28 +349,227 @@ public class UserServiceImpl implements IUserService {
             ResponseResult.FAILED("用户名或密码错误");
         }
         //密码正确，判断用户状态，如果不真诚返回结果（1是正常）
-        if (!userFromDb.getState().equals("1")) {
-            return ResponseResult.FAILED("用户已被禁封");
+        if (!"1".equals(userFromDb.getState())) {
+            return ResponseResult.ACCOUNT_FORBID();
         }
-        //用户密码是正确的，生成token
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", userFromDb.getId());
-        claims.put("user_name", userFromDb.getUserName());
-        claims.put("roles", userFromDb.getRoles());
-        claims.put("avatar", userFromDb.getAvatar());
-        claims.put("email", userFromDb.getEmail());
-        claims.put("sign", userFromDb.getSign());
-        //两个小时的默认有效期
-        String token = JwtUtils.createJWT(claims);
-        //返回token的md5，token保存到redis中，只给前端md5值，前端验证身份的时候给一个md5，然后后台根据md5找到对应token来验证身份
-        String tokenKey = DigestUtils.md5DigestAsHex(token.getBytes());
-        //token存入redis中，key是tokenKey
-        redisUtils.set(Constants.User.KEY_TOKEN + tokenKey, token, 60 * 60 * 2);
-        //token存储到cookies中
-        CookieUtils.setUpCookie(response,Constants.User.COOKIE_TOKEN_KEY,tokenKey);
-        //TODO 还需要生成长存储的refreshToken存mysql
+        createToken(response, userFromDb);
         //删除保存的验证码
         redisUtils.del(Constants.User.KEY_CAPTCHA_CONTENT + captchaKey);
         return ResponseResult.SUCCESS("登录成功");
+    }
+
+    private String createToken(HttpServletResponse response, SobUser userFromDb) {
+        return createToken(response, userFromDb, null);
+    }
+
+
+    private String createToken(HttpServletResponse response, SobUser userFromDb, String oldTokenKey) {
+        //从redis中删除之前的token
+        redisUtils.del(oldTokenKey);
+        //删除老refreshToken
+        refreshTokenDao.deleteAllByUserId(userFromDb.getId());
+        //用户密码是正确的，生成token
+        Map<String, Object> claims = ClaimsUtils.sobUser2Claims(userFromDb);
+        //两个小时的默认有效期
+        String token = JwtUtils.createToken(claims);
+        //返回token的md5，token保存到redis中，只给前端md5值，前端验证身份的时候给一个md5，然后后台根据md5找到对应token来验证身份
+        String tokenKey = DigestUtils.md5DigestAsHex(token.getBytes());
+        //token存入redis中，key是tokenKey
+        redisUtils.set(Constants.User.KEY_TOKEN + tokenKey, token, Constants.TimeValue.HOUR_2_S);
+        //token存储到cookies中
+        CookieUtils.setUpCookie(response, Constants.User.COOKIE_TOKEN_KEY, tokenKey);
+        //生成长存储的refreshToken存mysql
+        String refreshTokenValue = JwtUtils.createRefreshToken(userFromDb.getId(), Constants.TimeValue.MONTH_MS);
+        //保存到数据库中
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setId(String.valueOf(idWorker.nextId()));
+        refreshToken.setRefreshToken(refreshTokenValue);
+        refreshToken.setTokenKey(tokenKey);
+        refreshToken.setUserId(userFromDb.getId());
+        refreshToken.setCreateTime(new Date());
+        refreshToken.setUpdateTime(new Date());
+        refreshTokenDao.save(refreshToken);
+        return tokenKey;
+    }
+
+    /**
+     * 检查用户是否登录如果登录。就返回用户信息
+     *
+     * @param request
+     * @param response
+     * @return
+     */
+    @Override
+    public SobUser checkSobUser(HttpServletRequest request, HttpServletResponse response) {
+        String tokenKey = CookieUtils.getCookie(request, Constants.User.COOKIE_TOKEN_KEY);
+        log.info("拿到的tokenKey为====" + tokenKey);
+        SobUser sobUser = parseByTokenKey(tokenKey);
+        if (sobUser == null) {
+            //解析出错，可能过期了，去数据库查询refreshToken
+            RefreshToken refreshToken = refreshTokenDao.findOneByTokenKey(tokenKey);
+            if (refreshToken == null) {
+                return null;
+            }
+            try {
+                //查询到了refreshToken，创建新的token
+                String userId = refreshToken.getUserId();
+                SobUser userDaoOneById = userDao.findOneById(userId);
+                //创建新的token和新的refreshToken
+                String newTokenKey = createToken(response, userDaoOneById, Constants.User.KEY_TOKEN + tokenKey);
+                //返回token
+                return parseByTokenKey(newTokenKey);
+            } catch (Exception exception) {
+                return null;
+            }
+        }
+        return sobUser;
+    }
+
+    @Override
+    public ResponseResult getUserInfo(String userId) {
+        //从数据库里面获取
+        SobUser user = userDao.findOneById(userId);
+        //判空
+        if (user == null) {
+            return ResponseResult.FAILED("没有该用户信息");
+        }
+        //筛选信息,注意不能对查找出来的user类进行修改，事务没有提交，运行起来会抹了密码
+        String userJson = gson.toJson(user);
+        SobUser newSobUser = gson.fromJson(userJson, SobUser.class);
+        newSobUser.setPassword("");
+        newSobUser.setEmail("");
+        newSobUser.setRegIp("");
+        newSobUser.setLoginIp("");
+        return ResponseResult.SUCCESS("获取成功").setData(newSobUser);
+    }
+
+    @Override
+    public ResponseResult CheckEmail(String email) {
+        SobUser user = userDao.findOneByEmail(email);
+        return user == null ? ResponseResult.FAILED("此邮箱未注册") : ResponseResult.SUCCESS("此邮箱已注册");
+    }
+
+    @Override
+    public ResponseResult CheckUserName(String userName) {
+        SobUser user = userDao.findOneByUserName(userName);
+        return user == null ? ResponseResult.FAILED("此用户名未注册") : ResponseResult.SUCCESS("此用户名已经注册");
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param request
+     * @param response
+     * @param sobUser
+     * @param userId
+     * @return
+     */
+    @Override
+    public ResponseResult upDateUserInfo(HttpServletRequest request, HttpServletResponse response, SobUser sobUser, String userId) {
+        //需要校验权限
+        SobUser userFromCookie = checkSobUser(request, response);
+        if (userFromCookie == null) {
+            return ResponseResult.ACCOUNT_NOT_LOGIN();
+        }
+        SobUser userFromDb = userDao.findOneById(userFromCookie.getId());
+        //判断当前用户id于需要修改的用户id是否一致
+        if (!userFromDb.getId().equals(userId)) {
+            return ResponseResult.GET_RESOURCE_FAILED();
+        }
+        //用户名
+        String userName = sobUser.getUserName();
+        if (!TextUtils.isEmpty(userName)) {
+            if (userDao.findOneByUserName(userName) != null) {
+                return ResponseResult.FAILED("已存在该用户名");
+            }
+            userFromDb.setUserName(userName);
+        }
+        // 头像，
+        if (!TextUtils.isEmpty(sobUser.getAvatar())) {
+            userFromDb.setAvatar(sobUser.getAvatar());
+        }
+        //签名，
+        userFromDb.setSign(sobUser.getSign());
+        userDao.save(userFromDb);
+        //干掉redis中的token
+        String tokenKey = CookieUtils.getCookie(request, Constants.User.COOKIE_TOKEN_KEY);
+        redisUtils.del(Constants.User.KEY_TOKEN + tokenKey);
+        return ResponseResult.SUCCESS("用户信息修改成功");
+    }
+
+    /**
+     * 删除用户，不是真的删除，是修改用户状态
+     * 需要管理员权限
+     *
+     * @param userId
+     * @param request
+     * @param response
+     * @return
+     */
+    @Override
+    public ResponseResult deleteUserById(String userId, HttpServletRequest request, HttpServletResponse response) {
+        //检验当前登录的用户身份
+        SobUser currentUser = checkSobUser(request, response);
+        if (currentUser == null) {
+            return ResponseResult.ACCOUNT_NOT_LOGIN();
+        }
+        //判断角色
+        if (!Constants.User.ROLE_ADMIN.equals(currentUser.getRoles())) {
+            return ResponseResult.PERMISSION_FORBID();
+        }
+        int result = userDao.deleteUserByState(userId);
+        if (result > 0) {
+            return ResponseResult.SUCCESS("删除成功");
+        }
+        return ResponseResult.FAILED("用户不存在");
+    }
+
+    /**
+     * 列出用户列表，最少一页10组数据
+     * 需要管理员权限
+     * @param page
+     * @param size
+     * @param request
+     * @param response
+     * @return
+     */
+    @Override
+    public ResponseResult listUser(int page, int size, HttpServletRequest request, HttpServletResponse response) {
+        //检验当前登录的用户身份
+        SobUser currentUser = checkSobUser(request, response);
+        if (currentUser == null) {
+            return ResponseResult.ACCOUNT_NOT_LOGIN();
+        }
+        //判断角色
+        if (!Constants.User.ROLE_ADMIN.equals(currentUser.getRoles())) {
+            return ResponseResult.PERMISSION_FORBID();
+        }
+        //可以获取用户列表
+        if (page < Constants.Page.DEFAULT_PAGE) {
+            page = Constants.Page.DEFAULT_PAGE;
+        }
+
+        if (size < Constants.Page.MIN_SIZE) {
+            size = Constants.Page.MIN_SIZE;
+        }
+        //根据注册日期排序
+        Sort sort = new Sort(Sort.Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+        Page<SobUser> all = userDao.listAllUserNoPassWord(pageable);
+        return ResponseResult.SUCCESS("获取用户列表成功").setData(all);
+    }
+
+    private SobUser parseByTokenKey(String tokenKey) {
+        String token = (String) redisUtils.get(Constants.User.KEY_TOKEN + tokenKey);
+        if (token != null) {
+            try {
+                Claims claims = JwtUtils.parseJWT(token);
+                return ClaimsUtils.claims2SobUser(claims);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return null;
     }
 }

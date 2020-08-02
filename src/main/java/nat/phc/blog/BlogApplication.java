@@ -1,5 +1,6 @@
 package nat.phc.blog;
 
+import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import nat.phc.blog.utils.IdWorker;
 import nat.phc.blog.utils.RedisUtils;
@@ -34,13 +35,18 @@ public class BlogApplication {
     }
 
     @Bean
-    public RedisUtils createRedisUtils(){
+    public RedisUtils createRedisUtils() {
         return new RedisUtils();
     }
 
     @Bean
-    public Random createRandom(){
+    public Random createRandom() {
         return new Random();
+    }
+
+    @Bean
+    public Gson createGson() {
+        return new Gson();
     }
 }
 

@@ -27,4 +27,18 @@ public interface IUserService {
     ResponseResult register(SobUser sobUser, String emailCode, String captchaCode, String captchaKey, HttpServletRequest request);
 
     ResponseResult doLogin(String captcha, String captchaKey, SobUser sobUser, HttpServletRequest request, HttpServletResponse response);
+
+    SobUser checkSobUser(HttpServletRequest request,HttpServletResponse response);
+
+    ResponseResult getUserInfo(String userId);
+
+    ResponseResult CheckEmail(String email);
+
+    ResponseResult CheckUserName(String userName);
+
+    ResponseResult upDateUserInfo(HttpServletRequest request, HttpServletResponse response, SobUser sobUser, String userId);
+
+    ResponseResult deleteUserById(String userId, HttpServletRequest request, HttpServletResponse response);
+
+    ResponseResult listUser(int page, int size, HttpServletRequest request, HttpServletResponse response);
 }

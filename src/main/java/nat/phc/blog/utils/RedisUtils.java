@@ -1,5 +1,6 @@
 package nat.phc.blog.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -15,6 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @Description:
  * @Date: Create in 9:32 2020/7/25
  */
+@Slf4j
 @Component
 public class RedisUtils {
 
@@ -77,10 +79,15 @@ public class RedisUtils {
     @SuppressWarnings("unchecked")
     public void del(String... key) {
         if (key != null && key.length > 0) {
-            if (key.length == 1) {
-                redisTemplate.delete(key[0]);
-            } else {
-                redisTemplate.delete(CollectionUtils.arrayToList(key));
+            try {
+
+                if (key.length == 1) {
+                    redisTemplate.delete(key[0]);
+                } else {
+                    redisTemplate.delete(CollectionUtils.arrayToList(key));
+                }
+            } catch (Exception e) {
+                log.info("出现删除错误，可能是没有元素能删或没删掉");
             }
         }
     }

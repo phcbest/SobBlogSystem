@@ -9,8 +9,22 @@ public interface Constants {
 
     int DEFAULT_SIZE = 30;
 
+    /**
+     *
+     */
     interface TimeValue {
-        long HOUR_2 = 2 * 60 * 60 * 1000;
+        //单位秒
+        int MIN = 60;
+        int HOUR = 60 * MIN;
+        int DAY = 24 * HOUR;
+        int WEEK = 7 * DAY;
+        long HOUR_2_S = HOUR * 2;
+        //单位毫秒
+        int MS = 1000;
+
+        long MONTH_MS = DAY * 30L * MS;
+        long HOUR_2_MS = HOUR * 2 * MS;
+
     }
 
     interface User {
@@ -25,6 +39,11 @@ public interface Constants {
         String KEY_EMAIL_SEND_ADDRESS = "key_email_send_address_";
         String KEY_TOKEN = "key_token_";
         String COOKIE_TOKEN_KEY = "phc_blog_login_token";
+    }
+
+    interface Page {
+        int DEFAULT_PAGE = 1;
+        int MIN_SIZE = 10;
     }
 
     interface Settings {
