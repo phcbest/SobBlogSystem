@@ -39,7 +39,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-<!--依赖列表-->
+    <!--依赖列表-->
     <!--springWeb-->
     <dependencies>
         <dependency>
@@ -59,7 +59,7 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
-<!--        redis依赖-->
+        <!--        redis依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>

@@ -1,3 +1,52 @@
 [2020/08/02-09:22:06] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on PENGhc with PID 8928 (E:\code\java\SobBlogSystem\target\classes started by PengHaiChen in E:\code\java\SobBlogSystem)
 [2020/08/02-09:22:06] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
 [2020/08/02-09:22:10] [main] [INFO ] [nat.phc.blog.BlogApplication] : Started BlogApplication in 4.827 seconds (JVM running for 5.689)
+[2020/09/30-12:16:42] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on DESKTOP-5RTML9A with PID 4016 (C:\code\java\SobBlogSystem\target\classes started by penghaichen in C:\code\java\SobBlogSystem)
+[2020/09/30-12:16:42] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
+[2020/09/30-12:17:49] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on DESKTOP-5RTML9A with PID 11488 (C:\code\java\SobBlogSystem\target\classes started by penghaichen in C:\code\java\SobBlogSystem)
+[2020/09/30-12:17:49] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
+[2020/09/30-12:22:31] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on DESKTOP-5RTML9A with PID 12220 (C:\code\java\SobBlogSystem\target\classes started by penghaichen in C:\code\java\SobBlogSystem)
+[2020/09/30-12:22:31] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
+[2020/09/30-12:28:14] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on DESKTOP-5RTML9A with PID 12412 (C:\code\java\SobBlogSystem\target\classes started by penghaichen in C:\code\java\SobBlogSystem)
+[2020/09/30-12:28:14] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
+[2020/09/30-16:21:06] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on DESKTOP-5RTML9A with PID 7040 (C:\code\java\SobBlogSystem\target\classes started by penghaichen in C:\code\java\SobBlogSystem)
+[2020/09/30-16:21:06] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
+[2020/09/30-16:21:11] [main] [INFO ] [nat.phc.blog.BlogApplication] : Started BlogApplication in 6.125 seconds (JVM running for 7.08)
+[2020/09/30-16:36:23] [http-nio-2333-exec-5] [INFO ] [nat.phc.blog.controller.user.UserApi] : email========>phcbest2017@outlook.com
+[2020/09/30-16:36:23] [http-nio-2333-exec-5] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 申请发送email的ip地址为=====》0_0_0_0_0_0_0_1
+[2020/09/30-16:36:23] [http-nio-2333-exec-5] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 当前发送次数null
+[2020/09/30-16:36:23] [http-nio-2333-exec-5] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 是否存再验证码对象null
+[2020/09/30-16:36:23] [http-nio-2333-exec-5] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 申请发送email的验证码为554009
+[2020/09/30-16:36:24] [phc_blog_task_worker-1] [INFO ] [nat.phc.blog.utils.EmailSender] : email send..........
+[2020/09/30-16:36:25] [http-nio-2333-exec-7] [INFO ] [nat.phc.blog.controller.user.UserApi] : email========>phcbest2017@outlook.com
+[2020/09/30-16:36:25] [http-nio-2333-exec-7] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 申请发送email的ip地址为=====》0_0_0_0_0_0_0_1
+[2020/09/30-16:36:25] [http-nio-2333-exec-7] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 当前发送次数1
+[2020/09/30-16:36:25] [http-nio-2333-exec-7] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 是否存再验证码对象true
+[2020/09/30-16:37:36] [http-nio-2333-exec-10] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 两个验证码554009:554009
+[2020/09/30-16:45:20] [http-nio-2333-exec-4] [INFO ] [nat.phc.blog.utils.RedisUtils] : 出现删除错误，可能是没有元素能删或没删掉
+[2020/09/30-16:45:20] [http-nio-2333-exec-4] [INFO ] [nat.phc.blog.utils.JwtUtils] : token有效期时间为====》Wed Sep 30 18:45:20 CST 2020
+[2020/09/30-17:02:46] [http-nio-2333-exec-2] [INFO ] [nat.phc.blog.controller.user.UserApi] : email========>phcbest2017@outlook.com
+[2020/09/30-17:05:57] [http-nio-2333-exec-9] [INFO ] [nat.phc.blog.utils.RedisUtils] : 出现删除错误，可能是没有元素能删或没删掉
+[2020/09/30-17:05:57] [http-nio-2333-exec-9] [INFO ] [nat.phc.blog.utils.JwtUtils] : token有效期时间为====》Wed Sep 30 19:05:57 CST 2020
+[2020/09/30-17:06:53] [http-nio-2333-exec-4] [INFO ] [nat.phc.blog.utils.RedisUtils] : 出现删除错误，可能是没有元素能删或没删掉
+[2020/09/30-17:06:53] [http-nio-2333-exec-4] [INFO ] [nat.phc.blog.utils.JwtUtils] : token有效期时间为====》Wed Sep 30 19:06:53 CST 2020
+[2020/09/30-17:13:25] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on DESKTOP-5RTML9A with PID 10808 (C:\code\java\SobBlogSystem\target\classes started by penghaichen in C:\code\java\SobBlogSystem)
+[2020/09/30-17:13:25] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
+[2020/09/30-17:13:30] [main] [INFO ] [nat.phc.blog.BlogApplication] : Started BlogApplication in 5.138 seconds (JVM running for 5.828)
+[2020/09/30-17:13:51] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on DESKTOP-5RTML9A with PID 4688 (C:\code\java\SobBlogSystem\target\classes started by penghaichen in C:\code\java\SobBlogSystem)
+[2020/09/30-17:13:51] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
+[2020/09/30-17:13:56] [main] [INFO ] [nat.phc.blog.BlogApplication] : Started BlogApplication in 5.326 seconds (JVM running for 6.023)
+[2020/09/30-17:15:01] [http-nio-2333-exec-5] [INFO ] [nat.phc.blog.controller.TestController] : 评论内容===》string
+[2020/09/30-17:15:01] [http-nio-2333-exec-5] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 拿到的tokenKey为====048dffd3d0ac3005a8890354c46d3bbf
+[2020/09/30-17:16:06] [http-nio-2333-exec-8] [INFO ] [nat.phc.blog.controller.TestController] : 评论内容===》string
+[2020/09/30-17:16:06] [http-nio-2333-exec-8] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 拿到的tokenKey为====0dbdac86c6669f62dd854e35b1109264
+[2020/09/30-17:16:07] [http-nio-2333-exec-9] [INFO ] [nat.phc.blog.controller.TestController] : 评论内容===》string
+[2020/09/30-17:16:07] [http-nio-2333-exec-9] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 拿到的tokenKey为====0dbdac86c6669f62dd854e35b1109264
+[2020/09/30-17:18:24] [http-nio-2333-exec-3] [INFO ] [nat.phc.blog.controller.TestController] : 评论内容===》string
+[2020/09/30-17:18:24] [http-nio-2333-exec-3] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 拿到的tokenKey为====048dffd3d0ac3005a8890354c46d3bbf
+[2020/09/30-17:19:30] [http-nio-2333-exec-6] [INFO ] [nat.phc.blog.controller.TestController] : 评论内容===》string
+[2020/09/30-17:19:30] [http-nio-2333-exec-6] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 拿到的tokenKey为====048dffd3d0ac3005a8890354c46d3bbf
+[2020/09/30-17:20:24] [http-nio-2333-exec-1] [INFO ] [nat.phc.blog.controller.TestController] : 评论内容===》string
+[2020/09/30-17:20:24] [http-nio-2333-exec-1] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 拿到的tokenKey为====048dffd3d0ac3005a8890354c46d3bbf
+[2020/09/30-17:21:10] [http-nio-2333-exec-5] [INFO ] [nat.phc.blog.controller.TestController] : 评论内容===》string
+[2020/09/30-17:21:10] [http-nio-2333-exec-5] [INFO ] [nat.phc.blog.service.impl.UserServiceImpl] : 拿到的tokenKey为====048dffd3d0ac3005a8890354c46d3bbf

@@ -48,8 +48,8 @@ public class TestController {
 
     @GetMapping("/hello")
     public ResponseResult helloWorld() {
-        String captchaContent = (String)redisUtils.get(Constants.User.KEY_CAPTCHA_CONTENT+"123456");
-        log.info("captchaContent==========>"+captchaContent);
+        String captchaContent = (String) redisUtils.get(Constants.User.KEY_CAPTCHA_CONTENT + "123456");
+        log.info("captchaContent==========>" + captchaContent);
         return ResponseResult.SUCCESS().setData(captchaContent);
     }
 
@@ -181,11 +181,11 @@ public class TestController {
     private IUserService userService;
 
     @PostMapping("/comment")
-    public ResponseResult testComment(@RequestBody Comment comment, HttpServletRequest request,HttpServletResponse response) {
+    public ResponseResult testComment(@RequestBody Comment comment, HttpServletRequest request, HttpServletResponse response) {
         String content = comment.getContent();
         log.info("评论内容===》" + content);
         //对评论身份进行验证
-        String tokenKey = CookieUtils.getCookie(request,Constants.User.COOKIE_TOKEN_KEY);
+        String tokenKey = CookieUtils.getCookie(request, Constants.User.COOKIE_TOKEN_KEY);
         if (tokenKey == null) {
             return ResponseResult.ACCOUNT_NOT_LOGIN();
         }
@@ -195,6 +195,15 @@ public class TestController {
         }
         //数据填充
 //        id	parent_content	article_id	content	user_id	user_avatar	user_name	state	create_time	update_time
+        //{
+        //  "articleId": "string",
+        //  "content": "string",
+        //  "parentContent": "string",
+        //  "updateTime": "2020-09-30T09:14:36.255Z",
+        //  "userAvatar": "string",
+        //  "userId": "string",
+        //  "userName": "string"
+        //}
         comment.setUserId(sobUser.getId());
         comment.setUserAvatar(sobUser.getAvatar());
         comment.setUserName(sobUser.getUserName());

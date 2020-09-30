@@ -26,7 +26,6 @@ public class UserApi {
     private IUserService userService;
 
 
-
     /**
      * 初始化管理员账号
      */
@@ -43,11 +42,11 @@ public class UserApi {
      */
     @PostMapping
     public ResponseResult register(@RequestBody SobUser sobUser,
-                                   @RequestParam("email_code")String emailCode,
-                                   @RequestParam("captcha_code")String captchaCode,
-                                   @RequestParam("captcha_key")String captchaKey,
+                                   @RequestParam("email_code") String emailCode,
+                                   @RequestParam("captcha_code") String captchaCode,
+                                   @RequestParam("captcha_key") String captchaKey,
                                    HttpServletRequest request) {
-        return userService.register(sobUser,emailCode,captchaCode,captchaKey,request);
+        return userService.register(sobUser, emailCode, captchaCode, captchaKey, request);
 
     }
 
@@ -58,20 +57,18 @@ public class UserApi {
      * 图灵码
      * 图灵码key
      *
-     *
      * @param captcha
      * @param sobUser
      * @return
      */
     @PostMapping("/{captcha}/{captcha_key}")
-    public ResponseResult login( @PathVariable("captcha_key") String captchaKey,
-                                 @PathVariable("captcha") String captcha,
-                                 @RequestBody SobUser sobUser,
-                                 HttpServletRequest request,
-                                 HttpServletResponse response) {
-        return userService.doLogin(captcha,captchaKey,sobUser,request,response);
+    public ResponseResult login(@PathVariable("captcha_key") String captchaKey,
+                                @PathVariable("captcha") String captcha,
+                                @RequestBody SobUser sobUser,
+                                HttpServletRequest request,
+                                HttpServletResponse response) {
+        return userService.doLogin(captcha, captchaKey, sobUser, request, response);
     }
-
 
 
     /**
@@ -80,9 +77,9 @@ public class UserApi {
      * @return
      */
     @GetMapping("/captcha")
-    public void getCaptcha(HttpServletResponse response, @RequestParam("captcha_key") String captchaKey)  {
+    public void getCaptcha(HttpServletResponse response, @RequestParam("captcha_key") String captchaKey) {
         try {
-            userService.getCaptcha(response,captchaKey);
+            userService.getCaptcha(response, captchaKey);
         } catch (Exception e) {
             log.error(e.toString());
         }
@@ -92,17 +89,16 @@ public class UserApi {
 
     /**
      * 发送邮件
-     *三种使用场景，注册，找回密码，修改邮箱
-     *
+     * 三种使用场景，注册，找回密码，修改邮箱
      *
      * @param emailAddress
      * @return
      */
     @GetMapping("/verify_code")
-    public ResponseResult sendVerifyCode(HttpServletRequest request,@RequestParam("type")String type,
+    public ResponseResult sendVerifyCode(HttpServletRequest request, @RequestParam("type") String type,
                                          @RequestParam("email") String emailAddress) {
         log.info("email========>" + emailAddress);
-        return userService.sendEmail(type,request,emailAddress);
+        return userService.sendEmail(type, request, emailAddress);
     }
 
     /**
@@ -154,9 +150,8 @@ public class UserApi {
     @GetMapping("/list")
     public ResponseResult listUsers(@RequestParam("page") int page, @RequestParam("size") int size,
                                     HttpServletRequest request, HttpServletResponse response) {
-        return userService.listUser(page,size,request,response);
+        return userService.listUser(page, size, request, response);
     }
-
     /**
      * 该api为删除用户的api，也就是修改状态
      * 需要管理员权限

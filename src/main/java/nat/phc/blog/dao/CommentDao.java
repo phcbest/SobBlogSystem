@@ -11,4 +11,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @Date: Create in 11:04 2020/7/28
  */
 public interface CommentDao extends JpaRepository<Comment,String>, JpaSpecificationExecutor<Comment> {
+
 }

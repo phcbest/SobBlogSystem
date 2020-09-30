@@ -34,6 +34,7 @@ public class Swagger2Configuration {
                 .apiInfo(portalApiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("nat.phc.blog.controller.portal"))
+                .apis(RequestHandlerSelectors.basePackage("nat.phc.blog.controller."))
                 .paths(PathSelectors.any()) // 可以根据url路径设置哪些请求加入文档，忽略哪些请求
                 .build()
                 .groupName("前端门户");
@@ -89,6 +90,26 @@ public class Swagger2Configuration {
         return new ApiInfoBuilder()
                 .title("博客系统用户接口") //设置文档的标题
                 .description("用户接口的接口") // 设置文档的描述
+                .version(VERSION) // 设置文档的版本信息-> 1.0.0 Version information
+                .build();
+    }
+
+
+    @Bean
+    public Docket testApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(test())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("nat.phc.blog.controller"))
+                .paths(PathSelectors.any()) // 可以根据url路径设置哪些请求加入文档，忽略哪些请求
+                .build()
+                .groupName("测试中心");
+    }
+
+    private ApiInfo test() {
+        return new ApiInfoBuilder()
+                .title("测试使用") //设置文档的标题
+                .description("测试使用") // 设置文档的描述
                 .version(VERSION) // 设置文档的版本信息-> 1.0.0 Version information
                 .build();
     }
