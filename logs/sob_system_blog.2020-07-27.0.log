@@ -1,5 +1,0 @@
-[2020/07/27-08:31:47] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on PENGhc with PID 17864 (E:\code\java\SobBlogSystem\target\classes started by PengHaiChen in E:\code\java\SobBlogSystem)
-[2020/07/27-08:31:47] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
-[2020/07/27-08:32:58] [main] [INFO ] [nat.phc.blog.BlogApplication] : Starting BlogApplication on PENGhc with PID 17992 (E:\code\java\SobBlogSystem\target\classes started by PengHaiChen in E:\code\java\SobBlogSystem)
-[2020/07/27-08:32:58] [main] [INFO ] [nat.phc.blog.BlogApplication] : No active profile set, falling back to default profiles: default
-[2020/07/27-08:33:25] [main] [INFO ] [nat.phc.blog.BlogApplication] : Started BlogApplication in 27.355 seconds (JVM running for 28.723)

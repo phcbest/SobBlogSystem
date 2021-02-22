@@ -6,6 +6,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
+ *
+ * 这里是spring的安全配置
+ * 使用rbac模型
+ * role-base-access-control，基于角色的访问控制
  * @Author: PengHaiChen
  * @Description:
  * @Date: Create in 11:55 2020/7/24

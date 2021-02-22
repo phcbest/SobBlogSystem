@@ -348,7 +348,7 @@ public class UserServiceImpl implements IUserService {
         if (!matches) {
             ResponseResult.FAILED("用户名或密码错误");
         }
-        //密码正确，判断用户状态，如果不真诚返回结果（1是正常）
+        //密码正确，判断用户状态，如果不正常返回结果（1是正常）
         if (!"1".equals(userFromDb.getState())) {
             return ResponseResult.ACCOUNT_FORBID();
         }
