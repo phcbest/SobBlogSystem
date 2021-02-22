@@ -216,7 +216,7 @@ public class TestController {
         return ResponseResult.SUCCESS("评论成功");
     }
 
-    @GetMapping("/Interceptor/{name}")
+    @GetMapping("/interceptor/{name}")
     public String testInterceptor(@PathVariable String name) {
         return "hello" + name;
     }

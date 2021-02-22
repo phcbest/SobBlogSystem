@@ -19,14 +19,16 @@ import java.util.Random;
 @EnableSwagger2
 @SpringBootApplication
 public class BlogApplication {
+    
+
     public static void main(String[] args) {
         log.info("application_Run........");
         SpringApplication.run(BlogApplication.class, args);
     }
 
     @Bean
-    public IdWorker createId(){
-        return new IdWorker(0,0);
+    public IdWorker createId() {
+        return new IdWorker(0, 0);
     }
 
     @Bean
