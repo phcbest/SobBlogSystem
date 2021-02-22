@@ -215,4 +215,9 @@ public class TestController {
         commentDao.save(comment);
         return ResponseResult.SUCCESS("评论成功");
     }
+
+    @GetMapping("/Interceptor/{name}")
+    public String testInterceptor(@PathVariable String name) {
+        return "hello" + name;
+    }
 }
